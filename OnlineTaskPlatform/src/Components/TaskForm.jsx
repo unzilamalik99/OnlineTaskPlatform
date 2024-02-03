@@ -44,6 +44,16 @@ const TaskForm = ({ addTask, editedTask, updateTask }) => {
           <option value="">Select Task Type</option>
           <option value="data-entry">Data Entry</option>
           <option value="writing">Writing</option>
+          <option value="Translation">Translation</option>
+          <option value="Transcription">Transcription</option>
+          <option value="Social media management">
+            Social media management
+          </option>
+          <option value="Customer service">Customer service</option>
+          <option value=" Graphic design"> Graphic design</option>
+          <option value="Web development">Web development</option>
+          <option value="Software development">Software development</option>
+
           {/* ... (other options) */}
         </select>
 

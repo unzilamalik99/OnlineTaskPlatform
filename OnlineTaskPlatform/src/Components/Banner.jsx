@@ -1,16 +1,18 @@
 import React from "react";
-
+import PopularServices from "./PopularServices";
 import { Link } from "react-router-dom";
 
 const Banner = () => {
   return (
     <>
-      <section className="  md:pt-20  py-10">
-        <div className=" bg-white justify-center rounded-lg   flex md:flex-row flex-col-reverse  md:justify-between item-center md:px-20  px-10 mx-auto max-w-[1240px] overflow-hidden  ">
+      <section className="pb-10">
+        <PopularServices />
+
+        <div className="   justify-center rounded-lg   flex md:flex-row flex-col-reverse  md:justify-between item-center md:px-20  px-10 mx-auto max-w-[1240px] overflow-hidden  ">
           <div className=" float-left item-center ">
             <div data-aos="fade-right">
               <div>
-                <div className="z-20 text-black font-bold text-2xl md:text-3xl ">
+                <div className="z-20 text-black font-bold text-2xl md:text-3xl pt-10 ">
                   Welcome To Online Task Platform
                 </div>
 
@@ -40,14 +42,14 @@ const Banner = () => {
               </div>
             </div>
           </div>
-          <div className="md:float right md:px-0 px-10">
+          {/* <div className="md:float right md:px-0 px-10">
             <div className=" ">
               <img
                 src="a2.avif"
                 className="rounded-full  w-[200px] md:w-[700px] mb-5 md:mt-5 border-b "
               ></img>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
     </>

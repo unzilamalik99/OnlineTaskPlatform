@@ -1,5 +1,6 @@
 import React from "react";
 import { useTaskContext } from "./StoreData/TaskContext";
+import PopularServices from "./PopularServices";
 import { Link } from "react-router-dom";
 
 const TaskListing = () => {
@@ -7,9 +8,12 @@ const TaskListing = () => {
 
   if (!tasks || !tasks.length) {
     return (
-      <div className="text-2xl pt-40 md:pt-40 md:py-60 py-[200px] text-center md:text-3xl font-bold">
-        No tasks available....
-      </div>
+      <>
+        <PopularServices className="" />
+        <div className="text-2xl text-center gap-20 md:text-3xl font-bold my-20  md:my-40">
+          No tasks available....
+        </div>
+      </>
     );
   }
 
@@ -23,7 +27,8 @@ const TaskListing = () => {
 
   return (
     <>
-      <section className="md:pt-20 md:px-20 pt-10 px-7">
+      <PopularServices />
+      <section className="md:py-20 md:px-20 pt-10 px-7">
         <span className="text-2xl pt-10 text-center md:text-4xl font-bold">
           TaskListing
         </span>

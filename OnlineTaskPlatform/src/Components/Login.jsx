@@ -1,17 +1,32 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
+
+  const handleLogin = () => {
+    // Perform authentication logic (e.g., check username and password)
+    // For simplicity, let's assume the login is successful
+    // You should replace this with actual authentication logic
+
+    // Redirect to the admin dashboard upon successful login
+    navigate("/dashboard");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Perform login logic here
     // ...
 
+    // For simplicity, assume loginSuccessful is determined by some logic
+    const loginSuccessful = true;
+
     if (loginSuccessful) {
       setAlertMessage({ type: "success", message: "Login successful!" });
+      handleLogin(); // Redirect to the dashboard upon successful login
     } else {
       setAlertMessage({ type: "error", message: "Invalid email or password" });
     }
@@ -55,6 +70,7 @@ function Login() {
         </div>
         <div className="flex items-center justify-between">
           <button
+            onClick={handleLogin}
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
