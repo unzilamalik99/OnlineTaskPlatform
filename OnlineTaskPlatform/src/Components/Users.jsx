@@ -47,8 +47,6 @@ const Users = () => {
             <p className="text-gray-600">john.doe@example.com</p>
             <p className="text-gray-600">Role: Admin</p>
           </div>
-
-          {/* Add more user cards as needed */}
         </div>
 
         {/* Pagination */}

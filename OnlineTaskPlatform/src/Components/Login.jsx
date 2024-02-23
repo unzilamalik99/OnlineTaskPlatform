@@ -1,39 +1,75 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  doSignWithEmailAndPassword,
+  doSignInWithGoogle,
+} from "../Firebase/Auth";
+import { useAuth } from "../Context/authContext";
 
 function Login() {
+  const { userLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
-  const handleLogin = () => {
-    // Perform authentication logic (e.g., check username and password)
-    // For simplicity, let's assume the login is successful
-    // You should replace this with actual authentication logic
+  const handleLogin = async () => {
+    try {
+      // Assume you have a function to fetch user data, replace it with your actual logic
+      const userData = await fetchUserData(email); // Replace with your actual function
+      loginUser(userData);
 
-    // Redirect to the admin dashboard upon successful login
-    navigate("/dashboard");
+      navigate("/dashboard");
+    } catch (error) {
+      setAlertMessage({
+        type: "error",
+        message: "Failed to fetch user data",
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform login logic here
-    // ...
 
-    // For simplicity, assume loginSuccessful is determined by some logic
-    const loginSuccessful = true;
+    if (!isSigningIn) {
+      setIsSigningIn(true);
 
-    if (loginSuccessful) {
-      setAlertMessage({ type: "success", message: "Login successful!" });
-      handleLogin(); // Redirect to the dashboard upon successful login
-    } else {
-      setAlertMessage({ type: "error", message: "Invalid email or password" });
+      try {
+        await doSignWithEmailAndPassword(email, password);
+        handleLogin();
+      } catch (error) {
+        setIsSigningIn(false);
+        setAlertMessage({
+          type: "error",
+          message: "Invalid email or password",
+        });
+      }
+    }
+  };
+
+  const handleSignInWithGoogle = async (e) => {
+    e.preventDefault();
+
+    if (!isSigningIn) {
+      setIsSigningIn(true);
+
+      try {
+        await doSignInWithGoogle();
+        handleLogin();
+      } catch (error) {
+        setIsSigningIn(false);
+        setAlertMessage({
+          type: "error",
+          message: "Failed to sign in with Google",
+        });
+      }
     }
   };
 
   return (
-    <div className="container mx-auto px-4 md:pt-20 pt-10 md:w-[700px] ">
+    <div className="container mx-auto px-4 md:pt-20 pt-10 md:w-[700px]">
+      {userLoggedIn && <Link to="/dashboard" replace={true} />}
       <h2 className="text-2xl md:text-4xl pb-7 font-bold mb-4 item-center text-center">
         Login
       </h2>
@@ -70,13 +106,17 @@ function Login() {
         </div>
         <div className="flex items-center justify-between">
           <button
-            onClick={handleLogin}
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Login
           </button>
-          {/* Add link to forgot password or registration here */}
+          <button
+            onClick={handleSignInWithGoogle}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+          >
+            Sign in with Google
+          </button>
         </div>
       </form>
       {alertMessage && (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MdOutlineNavigateNext } from "react-icons/md";
-import Dashboard from "./Dashboard";
+// import Dashboard from "./Dashboard";
 // import Dashboard from "./Dashboard";
 
 const ResponsiveSidebar = () => {
@@ -12,10 +12,10 @@ const ResponsiveSidebar = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex z-[20]  h-screen bg-gray-100">
       {/* Sidebar */}
       <nav
-        className={`w-64 bg-gray-800 text-white p-4 ${
+        className={`md:w-64  bg-gray-800 text-white p-4 ${
           isSidebarOpen ? "block" : "hidden md:block"
         }`}
       >

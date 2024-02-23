@@ -42,14 +42,6 @@ const Banner = () => {
               </div>
             </div>
           </div>
-          {/* <div className="md:float right md:px-0 px-10">
-            <div className=" ">
-              <img
-                src="a2.avif"
-                className="rounded-full  w-[200px] md:w-[700px] mb-5 md:mt-5 border-b "
-              ></img>
-            </div>
-          </div> */}
         </div>
       </section>
     </>

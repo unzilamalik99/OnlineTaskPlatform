@@ -19,7 +19,6 @@ const AboutUs = () => {
           team handling complex tasks, our platform is tailored to meet your
           needs. Join us on this journey of productivity and efficiency.
         </p>
-        {/* Add more content as needed */}
       </div>
     </>
   );

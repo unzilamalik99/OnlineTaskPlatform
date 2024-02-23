@@ -20,7 +20,6 @@ const TaskForm = ({ addTask, editedTask, updateTask }) => {
     if (editedTask) {
       updateTask(task);
     } else {
-      // Generate a unique ID for the new task
       const newTask = {
         ...task,
         id: new Date().getTime().toString(),
@@ -53,8 +52,6 @@ const TaskForm = ({ addTask, editedTask, updateTask }) => {
           <option value=" Graphic design"> Graphic design</option>
           <option value="Web development">Web development</option>
           <option value="Software development">Software development</option>
-
-          {/* ... (other options) */}
         </select>
 
         <input

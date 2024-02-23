@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ResponsiveSidebar from "./ResponsiveSidebar";
-
+import { useAuth } from "../Context/authContext";
 const Dashboard = () => {
+  const { currentUser } = useAuth();
+  const displayName = currentUser ? currentUser.displayName : "Guest";
   const [taskSummary, setTaskSummary] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -41,68 +43,75 @@ const Dashboard = () => {
       ]);
     }, 2000);
   }, []);
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <ResponsiveSidebar />
-      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6">
-        {/* Task Summary */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Task Summary</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <p className="md:text-lg font-semibold">Total Tasks</p>
-              <p className="text-3xl font-bold text-blue-500">
-                {taskSummary.totalTasks}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <p className="md:text-lg font-semibold">Completed Tasks</p>
-              <p className="text-3xl font-bold text-green-500">
-                {taskSummary.completedTasks}
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <p className="md:text-lg font-semibold">Overdue Tasks</p>
-              <p className="text-3xl font-bold text-red-500">
-                {taskSummary.overdueTasks}
-              </p>
-            </div>
+    <>
+      <div className="flex h-screen bg-gray-100">
+        {/* Sidebar */}
+        <ResponsiveSidebar />
+
+        <main className="flex-1 overflow-x-hidden overflow-y-auto md:p-6 p-2 pt-10">
+          <div className="text-2xl font-bold pb-14 uppercase">
+            Hello, {displayName}
           </div>
-        </section>
+          {/* Task Summary */}
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Task Summary</h2>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <p className="md:text-lg font-semibold">Total Tasks</p>
+                <p className="text-3xl font-bold text-blue-500">
+                  {taskSummary.totalTasks}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <p className="md:text-lg font-semibold">Completed Tasks</p>
+                <p className="text-3xl font-bold text-green-500">
+                  {taskSummary.completedTasks}
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <p className="md:text-lg font-semibold">Overdue Tasks</p>
+                <p className="text-3xl font-bold text-red-500">
+                  {taskSummary.overdueTasks}
+                </p>
+              </div>
+            </div>
+          </section>
 
-        {/* Task List */}
-        <section className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Task List</h2>
-          <ul>
-            {taskList.map((task) => (
-              <li key={task.id} className="mb-2">
-                <span className="font-semibold">{task.title}</span>{" "}
-                <span className={`text-sm ${getStatusColor(task.status)}`}>
-                  ({task.status})
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+          {/* Task List */}
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">Task List</h2>
+            <ul>
+              {taskList.map((task) => (
+                <li key={task.id} className="mb-2">
+                  <span className="font-semibold">{task.title}</span>{" "}
+                  <span className={`text-sm ${getStatusColor(task.status)}`}>
+                    ({task.status})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        {/* Project Overview */}
-        <section>
-          <h2 className="text-xl font-semibold mb-2">Project Overview</h2>
-          <ul>
-            {projectOverview.map((project) => (
-              <li key={project.id} className="mb-2">
-                <span className="font-semibold">{project.name}</span>{" "}
-                <span className="text-sm">{project.tasks} tasks</span>{" "}
-                <span className="text-sm text-green-500">
-                  ({project.completion})
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </main>
-    </div>
+          {/* Project Overview */}
+          <section>
+            <h2 className="text-xl font-semibold mb-2">Project Overview</h2>
+            <ul>
+              {projectOverview.map((project) => (
+                <li key={project.id} className="mb-2">
+                  <span className="font-semibold">{project.name}</span>{" "}
+                  <span className="text-sm">{project.tasks} tasks</span>{" "}
+                  <span className="text-sm text-green-500">
+                    ({project.completion})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </main>
+      </div>
+    </>
   );
 };
 const getStatusColor = (status) => {

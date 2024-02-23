@@ -1,159 +1,341 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { GrTask } from "react-icons/gr";
-import { RiAdminLine } from "react-icons/ri";
+import { useAuth } from "../Context/authContext";
+import { doSignOut } from "../Firebase/Auth";
+import { IoMdMenu } from "react-icons/io";
+import { MdOutlineClose } from "react-icons/md";
+import { RiArrowDropDownLine } from "react-icons/ri";
+
+const LogoutButton = ({ onLogout }) => {
+  return (
+    <button
+      onClick={() => {
+        doSignOut().then(() => {
+          onLogout();
+        });
+      }}
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      Logout
+    </button>
+  );
+};
+
+const getRandomColor = () => {
+  const colors = [
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-yellow-500",
+    "bg-indigo-500",
+    "bg-pink-500",
+  ];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
+};
+
+const MobileNavbarItem = ({ to, children }) => {
+  return (
+    <Link to={to} className="block text-gray-600 hover:text-blue-600">
+      {children}
+    </Link>
+  );
+};
+
+const DropdownItem = ({ to, children, onClick }) => {
+  return (
+    <div className="text-gray-600 hover:text-blue-600">
+      <Link to={to} onClick={onClick}>
+        {children}
+      </Link>
+    </div>
+  );
+};
 
 const Header = () => {
   const [navbar, setNavbar] = useState(false);
+  const navigate = useNavigate();
+  const { userLoggedIn, getUsername, currentUser } = useAuth();
+  const displayName = getUsername();
+  const [image, setImage] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const toggleNavbar = () => {
+    setNavbar(!navbar);
+  };
+
+  const closeNavbar = () => {
+    setNavbar(false);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogout = () => {
+    navigate("/");
+  };
+
+  const toggleDropdown = () => {
+    setIsOpen((prevIsOpen) => !prevIsOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+  };
 
   return (
-    <nav className="w-full bg-[#ffffff15] shadow">
+    <nav className="w-full shadow">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
-        <div>
-          <div className="flex items-center justify-between py-3 md:py-5 md:block">
+        {/* main header */}
+        <div className="p-6">
+          <div className="flex">
+            <button
+              onClick={toggleNavbar}
+              className="text-black md:hidden text-2xl"
+            >
+              {navbar ? <MdOutlineClose /> : <IoMdMenu />}
+            </button>
             <Link
               to="/"
-              className="text-xl md:text-xl font-bold flex items-center"
+              className="flex items-center text-black md:text-4xl text-xl md:pl-0 pl-[40px] font-bold"
             >
-              <GrTask className="md:text-3xl text-xl" />
+              <GrTask />
               <span className="ml-2">TaskPlatform</span>
             </Link>
-            <div className="md:hidden">
-              <button
-                className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
-                onClick={() => setNavbar(!navbar)}
-              >
-                {navbar ? (
-                  <svg
-                    xmlns="http:www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+            <ul className="md:hidden hover:text-blue-600 relative pl-[60px] md:pl-5">
+              {userLoggedIn && currentUser ? (
+                <div className="flex flex-col items-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="profileImageInput"
+                  />
+                  <label htmlFor="profileImageInput" className="cursor-pointer">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt="Profile Preview"
+                        className="rounded-full h-10 w-10 object-cover"
+                      />
+                    ) : (
+                      <span
+                        className={`flex items-center justify-center text-gray-800 ${getRandomColor()} rounded-full h-10 w-10`}
+                      >
+                        <span className="text-white font-bold text-lg">
+                          {displayName && displayName[0].toUpperCase()}
+                        </span>
+                      </span>
+                    )}
+                  </label>
+                  <span className="ml-2">{displayName}</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <img
+                    src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                    alt="Default Profile"
+                    className="rounded-full h-10 w-10 object-cover"
+                  />
+                </div>
+              )}
+
+              {userLoggedIn && currentUser && (
+                <div className="relative ml-[-40px] mt-[-40px]">
+                  <button
+                    onClick={toggleDropdown}
+                    className="text-2xl md:text-4xl focus:outline-none"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http:www.w3.org/2000/svg"
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    <RiArrowDropDownLine />
+                  </button>
+                  <div
+                    ref={dropdownRef}
+                    className={`absolute ${
+                      isOpen ? "block" : "hidden"
+                    } bg-white border border-gray-300 rounded-md mt-2 z-20 transition-transform transform duration-300 ease-in-out p-4`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
+                    <DropdownItem to="/Dashboard" onClick={closeDropdown}>
+                      Dashboard
+                    </DropdownItem>
+                    <DropdownItem to="/ProfileSettings" onClick={closeDropdown}>
+                      Profile Settings
+                    </DropdownItem>
+                    {/* Add more dropdown items as needed */}
+                  </div>
+                </div>
+              )}
+            </ul>
           </div>
         </div>
+
+        {/* Mdblock */}
         <div
           className={`flex-1 justify-self-center md:block flex float-left md:pb-0 md:mt-0 ${
             navbar ? "block" : "hidden"
           }`}
         >
           <ul className="items-center justify-center space-y-8 md:flex md:space-x-4 md:space-y-0 px-5">
-            <li className="text-gray-600 hover:text-blue-600"></li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/Tasklistings">TaskListing</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/TaskSubmission">TaskSubmission</Link>
-            </li>
-
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/PaymentForm">PaymentForm</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/TaskManagement">TaskManager</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/OnlineWorkPlatform">Apply Now</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/AboutUs">About</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/ContactUs">Contact</Link>
-            </li>
-            <Link to="/Signup">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Signup
-              </button>
-            </Link>
-
-            <Link to="/Login">
-              <button className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                Login
-              </button>
-            </Link>
-            <li className="text-gray-600 hover:text-blue-600">
-              <div className="text-2xl  flex items-center space-x-4 pl-3 ">
-                <RiAdminLine />
+            <MobileNavbarItem to="/Tasklistings">TaskListing</MobileNavbarItem>
+            <MobileNavbarItem to="/TaskSubmission">
+              TaskSubmission
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/PaymentForm">PaymentForm</MobileNavbarItem>
+            <MobileNavbarItem to="/TaskManagement">
+              TaskManager
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/OnlineWorkPlatform">
+              Apply Now
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/AboutUs">About</MobileNavbarItem>
+            <MobileNavbarItem to="/ContactUs">Contact</MobileNavbarItem>
+            {userLoggedIn ? (
+              <LogoutButton onLogout={handleLogout} />
+            ) : (
+              <>
+                <Link to="/Signup">
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Register Now
+                  </button>
+                </Link>
+                <Link to="/Login">
+                  <button className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Login
+                  </button>
+                </Link>
+              </>
+            )}
+            <li className="hover:text-blue-600 relative pl-5 md:pl-0">
+              <div onClick={closeDropdown} className="flex items-center">
+                {userLoggedIn && currentUser ? (
+                  <div className="flex flex-col items-center">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                      id="profileImageInput"
+                    />
+                    <label
+                      htmlFor="profileImageInput"
+                      className="cursor-pointer"
+                    >
+                      {image ? (
+                        <img
+                          src={image}
+                          alt="Profile Preview"
+                          className="rounded-full h-10 w-10 object-cover"
+                        />
+                      ) : (
+                        <span
+                          className={`flex items-center justify-center text-gray-800 ${getRandomColor()} rounded-full h-10 w-10`}
+                        >
+                          <span className="text-white font-bold text-lg">
+                            {displayName && displayName[0].toUpperCase()}
+                          </span>
+                        </span>
+                      )}
+                    </label>
+                    <span className="ml-2">{displayName}</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <img
+                      src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+                      alt="Default Profile"
+                      className="rounded-full h-10 w-10 object-cover"
+                    />
+                  </div>
+                )}
               </div>
-              <Link to="/Dashboard" className="font-semibold ">
-                Admin
-              </Link>
+
+              {userLoggedIn && currentUser && (
+                <div className="flex float-right relative mt-[-50px]">
+                  <div className="absolute">
+                    <button
+                      onClick={toggleDropdown}
+                      className="text-2xl md:text-4xl focus:outline-none"
+                    >
+                      <RiArrowDropDownLine />
+                    </button>
+                    <div
+                      ref={dropdownRef}
+                      className={`absolute ${
+                        isOpen ? "block" : "hidden"
+                      } bg-white border border-gray-300 rounded-md mt-2 z-[20] transition-transform transform duration-300 ease-in-out p-4`}
+                    >
+                      <MobileNavbarItem to="/Dashboard" onClick={closeDropdown}>
+                        Dashboard
+                      </MobileNavbarItem>
+                      <MobileNavbarItem
+                        to="/ProfileSettings"
+                        onClick={closeDropdown}
+                      >
+                        Profile Settings
+                      </MobileNavbarItem>
+                      {/* Add more dropdown items as needed */}
+                    </div>
+                  </div>
+                </div>
+              )}
             </li>
           </ul>
         </div>
+
+        {/* mobile ResponsiveSidebar */}
         <div
-          className={`flex-1 md:hidden justify-self-center z-[20] left-0 px-0 top-0 bg-white rounded-xl fixed shadow appearance-none w-80 h-[700px] border flex float-left md:pb-0 md:mt-0 ${
+          className={`flex-1 md:hidden justify-self-center z-[40] left-0 px-0 top-0 bg-white rounded-xl fixed shadow appearance-none w-80 h-[700px] border flex float-left md:pb-0 md:mt-0 ${
             navbar ? "block" : "hidden"
           }`}
         >
-          <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0 px-7 pt-20">
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/" className="text-2xl font-bold ">
-                TaskPlatform
-              </Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/Dashboard" className="font-semibold ">
-                Admin
-              </Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/Tasklistings">TaskListing</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/TaskSubmission">TaskSubmission</Link>
-            </li>
-
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/PaymentForm">PaymentForm</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/TaskManagement">TaskManagement</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/OnlineWorkPlatform">Apply Now</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/AboutUs">About Us</Link>
-            </li>
-            <li className="text-gray-600 hover:text-blue-600">
-              <Link to="/ContactUs">Contact US</Link>
-            </li>
-            <Link to="/Signup">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5 ">
-                Signup
-              </button>
-            </Link>
-
-            <Link to="/Login">
-              <button className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ">
-                Login
-              </button>
-            </Link>
+          <ul
+            className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0 px-7 pt-20"
+            onClick={closeNavbar}
+          >
+            <MobileNavbarItem to="/" className="">
+              <div>
+                <h1 className="text-3xl font-semibold mb-5">TaskPlatform</h1>
+              </div>
+            </MobileNavbarItem>
+            {/* <MobileNavbarItem to="/Dashboard">Admin</MobileNavbarItem> */}
+            {!userLoggedIn && (
+              <>
+                <Link to="/Signup">
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Register Now
+                  </button>
+                </Link>
+                <Link to="/Login">
+                  <button className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Login
+                  </button>
+                </Link>
+              </>
+            )}
+            {userLoggedIn ? <LogoutButton onLogout={handleLogout} /> : null}
+            <MobileNavbarItem to="/Tasklistings">TaskListing</MobileNavbarItem>
+            <MobileNavbarItem to="/TaskSubmission">
+              TaskSubmission
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/PaymentForm">PaymentForm</MobileNavbarItem>
+            <MobileNavbarItem to="/TaskManagement">
+              TaskManagement
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/OnlineWorkPlatform">
+              Apply Now
+            </MobileNavbarItem>
+            <MobileNavbarItem to="/AboutUs">About Us</MobileNavbarItem>
+            <MobileNavbarItem to="/ContactUs">Contact US</MobileNavbarItem>
           </ul>
         </div>
       </div>

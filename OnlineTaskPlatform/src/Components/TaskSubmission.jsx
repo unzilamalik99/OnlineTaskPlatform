@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useTaskContext } from "./StoreData/TaskContext";
+import { addTaskToDatabase } from "./StoreData/FirebaseFunctions";
+import { v4 as uuidv4 } from "uuid";
+
 const TaskSubmission = () => {
   const { addTask } = useTaskContext();
+  const [taskId, setTaskId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
@@ -11,10 +15,13 @@ const TaskSubmission = () => {
   const [Details, setDetails] = useState("");
   const [submissionMessage, setSubmissionMessage] = useState("");
 
+  const generateUniqueId = () => {
+    return uuidv4();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate data
     const validationErrors = {};
     if (!title.trim()) validationErrors.title = "Title is required";
     if (!description.trim())
@@ -27,24 +34,30 @@ const TaskSubmission = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      // Add the new task to the global state
-      addTask({
+      const newTaskId = taskId.trim() !== "" ? taskId : generateUniqueId(); // Use entered task ID or generate one
+
+      const newTaskData = {
+        id: newTaskId,
         title,
         description,
         budget,
         deadline,
         skills,
         Details,
-      });
+      };
+
+      addTask(newTaskData);
+      addTaskToDatabase(newTaskData);
+
       setSubmissionMessage("Task submitted successfully!");
 
-      // Clear form fields after successful submission
       setTitle("");
       setDescription("");
       setBudget("");
       setDeadline("");
       setSkills("");
       setDetails("");
+      setTaskId("");
 
       setTimeout(() => {
         setErrors({});
@@ -52,9 +65,8 @@ const TaskSubmission = () => {
       }, 5000);
     }
   };
-
   return (
-    <div className="container px-3 shadow appearance-none border  mt-10 mx-auto p-4 md:w-[700px] md:mt-20 md:py-10 pt-20  rounded-xl ">
+    <div className="container px-3 shadow appearance-none border  mt-10 mx-auto p-4 md:w-[700px] md:my-20 md:py-10 py-20  rounded-xl ">
       <h2 className="text-2xl md:text-4xl font-bold mb-4 md:py-5 item-center text-center ">
         Submit a Task
       </h2>
