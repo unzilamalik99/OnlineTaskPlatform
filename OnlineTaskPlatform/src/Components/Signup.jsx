@@ -137,21 +137,6 @@ function Signup() {
           </div>
           <div className="mb-6">
             <label
-              htmlFor="password"
-              className="block text-gray-700 font-bold mb-2"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-6">
-            <label
               htmlFor="confirmPassword"
               className="block text-gray-700 font-bold mb-2"
             >
@@ -173,14 +158,12 @@ function Signup() {
 
           <div className="flex items-center justify-between mt-4">
             <button
-              type="submit" // add type="submit" to make it a submit button
+              type="submit"
+              disabled={password !== confirmPassword} // Disable the button when passwords don't match
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Signup
             </button>
-            <Link to="/login" className="pl-4 text-blue-500">
-              Already have an account? Login here
-            </Link>
           </div>
         </form>
       </div>
